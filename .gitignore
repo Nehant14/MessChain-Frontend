@@ -43,3 +43,5 @@ yarn-error.*
 # More
 .claude/
 CLAUDE.md
+AGENTS.md
+LICENSE
