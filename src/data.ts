@@ -115,7 +115,7 @@ export const voteChoices = [
 ];
 
 export const staffTasks = [
-  { title: 'Cross-check pantry intake', note: 'Sync receipts before 18:00' },
-  { title: 'Confirm wallet approvals', note: 'Queue sealed after quorum' },
-  { title: 'Refresh menu inventory', note: 'Push middleware logs' },
+  { title: 'Cross-check pantry intake' },
+  { title: 'Confirm wallet approvals' },
+  { title: 'Refresh menu inventory' },
 ];
