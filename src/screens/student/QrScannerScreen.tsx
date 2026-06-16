@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useState, useContext } from 'react'; // CHANGED: Imported useContext tracking hooks
+import { View, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native'; // CHANGED: Added native Alert handler
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { Feather } from '@expo/vector-icons';
 import { GlassCard, PrimaryButton, SectionTitle } from '../../components';
 import { palette } from '../../theme';
+import { NetworkContext } from '../../context/NetworkContext'; // CHANGED: Linked app-wide context managers
+import { scanQrCode } from '../../services/student'; // CHANGED: Linked verification functionality
 
 export default function QrScannerScreen() {
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [scannedQr, setScannedQr] = useState<string | null>(null);
+
+  // CHANGED: Consume Network Context state configuration
+  const networkContext = useContext(NetworkContext);
+  const { processing, launchProcessing } = networkContext || { processing: null, launchProcessing: (id: string, fn: any) => fn() };
 
   if (!cameraPermission) {
     return (
@@ -53,6 +59,16 @@ export default function QrScannerScreen() {
   const handleQrScan = ({ data }: { data: string }) => {
     if (scannedQr === data) return;
     setScannedQr(data);
+
+    // CHANGED: Added automatic background transaction dispatch on scan event
+    launchProcessing('verify-meal', async () => {
+      try {
+        const response = await scanQrCode(data);
+        Alert.alert("Success", response.message || "Meal verified successfully!");
+      } catch (err: any) {
+        Alert.alert("Verification Failed", err.message || "Failed to parse on-chain block record.");
+      }
+    });
   };
 
   return (
@@ -74,7 +90,10 @@ export default function QrScannerScreen() {
             <View style={styles.reticlePulse} />
           </View>
           <View style={styles.cameraBottomSheet}>
-            <Text style={styles.cameraLabel}>Scanning live session QR</Text>
+            <Text style={styles.cameraLabel}>
+              {/* CHANGED: Visually communicate dynamic load processing states via labels */}
+              {processing === 'verify-meal' ? "Processing Timelock Tx..." : "Scanning live session QR"}
+            </Text>
             <Text style={styles.cameraSub}>
               Point the camera at the code to capture the student session token.
             </Text>
