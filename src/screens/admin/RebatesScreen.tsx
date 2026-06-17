@@ -21,26 +21,30 @@ export default function RebatesScreen() {
         <GlassCard key={claim.id} style={{ marginBottom: 12 }}>
           <View style={styles.cardHeaderRow}>
             <View>
-              <Text style={styles.listTitle}>{claim.student}</Text>
-              <Text style={styles.listBody}>{claim.reason}</Text>
+              <Text style={styles.listTitle}>
+                {claim.student ? `${claim.student.slice(0, 8)}...${claim.student.slice(-6)}` : 'Unknown Student'}
+              </Text>
+              {/* CHANGED: Provided fallback text value string for on-chain entries lacking context reasons */}
+              <Text style={styles.listBody}>{claim.reason || 'Leave of absence / Mess rebate claim request'}</Text>
             </View>
-            <Text style={styles.amountText}>{claim.amount}</Text>
+            <Text style={styles.amountText}>{claim.amount} tokens</Text>
           </View>
           <View style={styles.lockStrip}>
             <LockClockIcon />
             <View style={{ flex: 1 }}>
               <Text style={styles.lockStripTitle}>Time lock active</Text>
               <Text style={styles.lockStripBody}>
-                {claim.lock} • receipt {claim.id} • {countdownText}
+                {claim.lock || 'Standard Protocol'} • receipt #{claim.id} • {countdownText}
               </Text>
             </View>
           </View>
           <View style={styles.hashRow}>
+            {/* Added defensive guard checks to protect string slice evaluations against undefined structures */}
             <ReceiptBadge
               label="Settlement hash"
-              value={`${claim.hash.slice(0, 10)}...${claim.hash.slice(-8)}`}
+              value={claim.hash ? `${claim.hash.slice(0, 10)}...${claim.hash.slice(-8)}` : 'Pending Blockchain Tx'}
             />
-            <Pill label={claim.status} tone="indigo" icon="shield" />
+            <Pill label={claim.status || 'Unprocessed'} tone="indigo" icon="shield" />
           </View>
           <View style={styles.inlineActions}>
             <PrimaryButton

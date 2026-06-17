@@ -37,13 +37,18 @@ export function useRebates() {
     return () => clearInterval(timer);
   }, []);
 
-  const triggerApprove = async (id: string) => {
-    handleApprove(id);
+  
+  const triggerApprove = async (id: string | number) => {
+    handleApprove(String(id));
   };
 
-  const triggerDeny = async (id: string) => {
+  const triggerDeny = async (id: string | number) => {
     launchProcessing(`deny-${id}`, async () => {
-      await denyRebate(id);
+      await denyRebate(String(id));
+      
+      setRebates((current) =>
+        current.map((r) => (String(r.id) === String(id) ? { ...r, status: 'Rejected' } : r))
+      );
     });
   };
 

@@ -8,8 +8,9 @@ export default function LogsScreen() {
   return (
     <View>
       <SectionTitle eyebrow="Staff" title="Daily logs" />
-      {studentLogs.map((item) => (
-        <GlassCard key={item.title} style={{ marginBottom: 12 }}>
+      {studentLogs.map((item, index) => (
+        // Replaced non-unique item.title key with an indexed composite key to prevent state cross-contamination
+        <GlassCard key={`${item.title}-${index}`} style={{ marginBottom: 12 }}>
           <View style={styles.lockStrip}>
             <LockClockIcon />
             <View style={{ flex: 1 }}>

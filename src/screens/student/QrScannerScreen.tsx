@@ -1,17 +1,17 @@
-import React, { useState, useContext } from 'react'; // CHANGED: Imported useContext tracking hooks
-import { View, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native'; // CHANGED: Added native Alert handler
+import React, { useState, useContext } from 'react';
+import { View, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
 import { Feather } from '@expo/vector-icons';
 import { GlassCard, PrimaryButton, SectionTitle } from '../../components';
 import { palette } from '../../theme';
-import { NetworkContext } from '../../context/NetworkContext'; // CHANGED: Linked app-wide context managers
-import { scanQrCode } from '../../services/student'; // CHANGED: Linked verification functionality
+import { NetworkContext } from '../../context/NetworkContext';
+import { scanQrCode } from '../../api/student';
 
 export default function QrScannerScreen() {
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [scannedQr, setScannedQr] = useState<string | null>(null);
 
-  // CHANGED: Consume Network Context state configuration
+  // Consume Network Context state configuration
   const networkContext = useContext(NetworkContext);
   const { processing, launchProcessing } = networkContext || { processing: null, launchProcessing: (id: string, fn: any) => fn() };
 
@@ -60,7 +60,7 @@ export default function QrScannerScreen() {
     if (scannedQr === data) return;
     setScannedQr(data);
 
-    // CHANGED: Added automatic background transaction dispatch on scan event
+    // Added automatic background transaction dispatch on scan event
     launchProcessing('verify-meal', async () => {
       try {
         const response = await scanQrCode(data);

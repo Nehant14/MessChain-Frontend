@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { Role } from '../theme';
 import { AuthSession } from '../types/auth.types';
 import { readStoredSession, writeStoredSession, clearStoredSession } from '../utils/storage';
-import { resolveRoleFromEmail } from '../utils/roleResolver';
+import { loginUser } from '../api/auth';
 
 export interface AuthContextType {
   session: AuthSession | null;
@@ -27,7 +27,11 @@ const roleHome: Record<Role, string> = {
   staff: 'dashboard',
 };
 
-const createSessionToken = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+const demoCredentials: Record<string, { password: string; role: Role }> = {
+  'student@messchain.com': { password: 'student', role: 'student' },
+  'staff@messchain.com': { password: 'staff', role: 'staff' },
+  'admin@messchain.com': { password: 'admin', role: 'admin' },
+};
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -55,20 +59,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(storedSession);
         setRole(storedSession.role);
       }
-
       setBootstrapping(false);
     };
 
     hydrateSession();
-
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, []);
 
   const handleLogin = async () => {
     const email = loginEmail.trim().toLowerCase();
-    if (!email || !loginPassword.trim()) {
+    const password = loginPassword.trim();
+
+    if (!email || !password) {
       setLoginError('Enter both email ID and password.');
       return;
     }
@@ -78,15 +80,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const nextRole = resolveRoleFromEmail(email);
-    const nextSession = { email, role: nextRole, token: createSessionToken() };
+    try {
+      const demoAccount = __DEV__ ? demoCredentials[email] : undefined;
 
-    await writeStoredSession(nextSession);
-    setSession(nextSession);
-    setRole(nextRole);
-    setScreen(roleHome[nextRole]);
-    setLoginError('');
-    setLoginPassword('');
+      if (demoAccount && demoAccount.password === password) {
+        const nextSession = {
+          email,
+          role: demoAccount.role,
+          token: `demo-${demoAccount.role}`,
+        };
+
+        await writeStoredSession(nextSession);
+        setSession(nextSession);
+        setRole(demoAccount.role);
+        setScreen(roleHome[demoAccount.role]);
+        setLoginError('');
+        setLoginPassword('');
+        return;
+      }
+
+      const response = await loginUser(email, password);
+      const nextRole = response.user.role.toLowerCase() as Role;
+      const nextSession = {
+        email: response.user.email,
+        role: nextRole,
+        token: response.token,
+      };
+
+      await writeStoredSession(nextSession);
+      setSession(nextSession);
+      setRole(nextRole);
+      setScreen(roleHome[nextRole]);
+      setLoginError('');
+      setLoginPassword('');
+    } catch (error: any) {
+      setLoginError(error.message || 'Authentication failed.');
+    }
   };
 
   const handleLogout = async () => {

@@ -8,9 +8,9 @@ export default function VoteScreen() {
   const { voteChoices, castVote } = usePolls();
   const [voteChoice, setVoteChoice] = useState<string | null>(null);
 
-  const handleVote = (choiceLabel: string) => {
+  const handleVote = async (choiceLabel: string) => {
     setVoteChoice(choiceLabel);
-    castVote(choiceLabel);
+    await castVote(choiceLabel);
   };
 
   return (
@@ -19,6 +19,7 @@ export default function VoteScreen() {
       {voteChoices.map((choice) => {
         const active = voteChoice === choice.label;
         const fill = active ? 100 : choice.votes;
+        const pillTone = choice.tone === 'emerald' || choice.tone === 'violet' ? choice.tone : 'indigo';
         return (
           <Pressable
             key={choice.label}
@@ -30,13 +31,7 @@ export default function VoteScreen() {
                 <Text style={styles.listTitle}>{choice.label}</Text>
                 <Pill
                   label={`${fill}%`}
-                  tone={
-                    choice.tone === 'emerald'
-                      ? 'emerald'
-                      : choice.tone === 'violet'
-                      ? 'violet'
-                      : 'indigo'
-                  }
+                  tone={pillTone}
                   icon="trending-up"
                 />
               </View>

@@ -27,7 +27,6 @@ import {
   copyToClipboard,
 } from './src/components';
 
-// Admin screens
 import DashboardScreen from './src/screens/admin/DashboardScreen';
 import CreateStaffScreen from './src/screens/admin/CreateStaffScreen';
 import ComplaintsScreen from './src/screens/admin/ComplaintsScreen';
@@ -36,15 +35,12 @@ import RebatesScreen from './src/screens/admin/RebatesScreen';
 import CreatePollScreen from './src/screens/admin/CreatePollScreen';
 import BetaSettingsScreen from './src/screens/admin/BetaSettingsScreen';
 
-// Student screens
 import QrScannerScreen from './src/screens/student/QrScannerScreen';
 import FileComplaintScreen from './src/screens/student/FileComplaintScreen';
 import FileFeedbackScreen from './src/screens/student/FileFeedbackScreen';
 import ProfileScreen from './src/screens/student/ProfileScreen';
 import VoteScreen from './src/screens/student/VoteScreen';
 
-// Staff screens
-import StaffDashboardScreen from './src/screens/staff/StaffDashboardScreen';
 import TasksScreen from './src/screens/staff/TasksScreen';
 import LogsScreen from './src/screens/staff/LogsScreen';
 import InventoryScreen from './src/screens/staff/InventoryScreen';
@@ -57,7 +53,7 @@ const roleTabs = { admin: adminTabs, student: studentTabs, staff: staffTabs } as
 const roleMenus = {
   admin: ['dashboard', 'create-staff', 'complaints', 'feedback-report', 'rebates', 'create-poll', 'beta-settings'],
   student: ['qr-scanner', 'file-complaint', 'file-feedback', 'profile', 'vote'],
-  staff: ['dashboard', 'tasks', 'logs', 'inventory', 'settings'],
+  staff: ['tasks', 'logs', 'inventory', 'settings'],
 } as const;
 
 function AppContent() {
@@ -106,41 +102,26 @@ function AppContent() {
 
   const renderRoute = () => {
     switch (screen) {
-      case 'create-staff':
-        return <CreateStaffScreen />;
-      case 'complaints':
-        return <ComplaintsScreen />;
-      case 'feedback-report':
-        return <FeedbackReportScreen />;
-      case 'rebates':
-        return <RebatesScreen />;
-      case 'create-poll':
-        return <CreatePollScreen />;
-      case 'beta-settings':
-        return <BetaSettingsScreen />;
-      case 'qr-scanner':
-        return <QrScannerScreen />;
-      case 'file-complaint':
-        return <FileComplaintScreen />;
-      case 'file-feedback':
-        return <FileFeedbackScreen />;
-      case 'profile':
-        return <ProfileScreen />;
-      case 'vote':
-        return <VoteScreen />;
-      case 'tasks':
-        return <TasksScreen />;
-      case 'logs':
-        return <LogsScreen />;
-      case 'inventory':
-        return <InventoryScreen />;
-      case 'settings':
-        return <SettingsScreen />;
+      case 'create-staff': return <CreateStaffScreen />;
+      case 'complaints': return <ComplaintsScreen />;
+      case 'feedback-report': return <FeedbackReportScreen />;
+      case 'rebates': return <RebatesScreen />;
+      case 'create-poll': return <CreatePollScreen />;
+      case 'beta-settings': return <BetaSettingsScreen />;
+      case 'qr-scanner': return <QrScannerScreen />;
+      case 'file-complaint': return <FileComplaintScreen />;
+      case 'file-feedback': return <FileFeedbackScreen />;
+      case 'profile': return <ProfileScreen />;
+      case 'vote': return <VoteScreen />;
+      case 'tasks': return <TasksScreen />;
+      case 'logs': return <LogsScreen />;
+      case 'inventory': return <InventoryScreen />;
+      case 'settings': return <SettingsScreen />;
       default:
         return role === 'student' ? (
           <QrScannerScreen />
         ) : role === 'staff' ? (
-          <StaffDashboardScreen />
+          <TasksScreen />
         ) : (
           <DashboardScreen />
         );
@@ -254,7 +235,6 @@ function AppContent() {
             </>
           )}
 
-          {walletCopied ? <Text style={styles.toast}>Wallet copied to clipboard.</Text> : null}
           <View style={styles.routeSurface}>{renderRoute()}</View>
         </View>
       </ScrollView>

@@ -20,7 +20,7 @@ export default function CreatePollScreen() {
 
   const handleSchedulePoll = () => {
     launchProcessing('schedule-poll', async () => {
-      await createNewPoll(pollName, pollWindow);
+      await createNewPoll(pollName, pollWindow, pollOptions);
     });
   };
 

@@ -36,11 +36,12 @@ export default function ComplaintsScreen() {
           <GlassCard key={item.id} style={{ marginBottom: 12 }}>
             <View style={styles.cardHeaderRow}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.listTitle}>{item.id}</Text>
-                <Text style={styles.listBody}>{item.title}</Text>
+                <Text style={styles.listTitle}>Complaint #{item.id}</Text>
+                {/* CHANGED: Fallback reference if title is missing from raw blockchain/IPFS text output */}
+                <Text style={styles.listBody}>{item.title || 'System Complaint Log'}</Text>
               </View>
               <Pill
-                label={item.urgency}
+                label={item.urgency || 'Normal'}
                 tone={item.urgency === 'High' ? 'red' : 'amber'}
                 icon="alert-triangle"
               />
@@ -49,8 +50,9 @@ export default function ComplaintsScreen() {
               onPress={() => setRevealComplaint(expanded ? null : item.id)}
               style={styles.expandRow}
             >
+              {/* CHANGED: Replaced item.body with item.content to read the fetched text string from your backend IPFS resolution mapping */}
               <Text style={styles.expandText}>
-                {expanded ? item.body : `${item.body.slice(0, 110)}...`}
+                {expanded ? item.content : `${item.content?.slice(0, 110) || ''}...`}
               </Text>
               <Feather
                 name={expanded ? 'chevron-up' : 'chevron-down'}
@@ -59,20 +61,21 @@ export default function ComplaintsScreen() {
               />
             </Pressable>
             <View style={styles.hashRow}>
+              {/* CHANGED: Linked item.ipfs target references to item.cid property matching backend response key */}
               <ReceiptBadge
                 label="IPFS hash"
-                value={`${item.ipfs.slice(0, 10)}...${item.ipfs.slice(-8)}`}
+                value={item.cid ? `${item.cid.slice(0, 10)}...${item.cid.slice(-8)}` : 'No CID'}
               />
               <PrimaryButton
                 label="Copy"
                 icon="copy"
                 tone="violet"
-                onPress={() => copyToClipboard(item.ipfs)}
+                onPress={() => copyToClipboard(item.cid || '')}
               />
             </View>
             <View style={styles.inlineActions}>
               <Pill
-                label={item.status}
+                label={item.status || 'Pending'}
                 tone={item.status === 'Resolved' ? 'emerald' : 'indigo'}
                 icon="check-circle"
               />
