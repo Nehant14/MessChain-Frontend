@@ -4,7 +4,7 @@ import { getPollOptions, getVoteChoices, schedulePoll, submitVote } from '../api
 
 export function usePolls() {
   const [pollOptions, setPollOptions] = useState<PollOption[]>([]);
-  const [voteChoices, setVoteChoices] = useState<any[]>([]);
+  const [voteChoices, setVoteChoices] = useState<PollOption[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,8 +29,12 @@ export function usePolls() {
     setPollOptions((current) => [...current, { label: `Option ${current.length + 1}`, votes: 0 }]);
   };
 
-  const createNewPoll = async (title: string, window: string) => {
-    await schedulePoll(title, window, pollOptions);
+  const createNewPoll = async (title: string, window: string, options: PollOption[] = pollOptions) => {
+    await schedulePoll(
+      title,
+      window,
+      options.map((option) => option.label),
+    );
   };
 
   const castVote = async (choiceLabel: string) => {

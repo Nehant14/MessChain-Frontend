@@ -9,8 +9,9 @@ export default function TasksScreen() {
   return (
     <View>
       <SectionTitle eyebrow="Staff" title="Task board" />
-      {(staffTasks as StaffTask[]).map((task) => (
-        <GlassCard key={task.title} style={{ marginBottom: 12 }}>
+      {(staffTasks as StaffTask[]).map((task, index) => (
+        // Added defensive fallback composite tracking keys to handle repetitive titles cleanly
+        <GlassCard key={`${task.title}-${index}`} style={{ marginBottom: 12 }}>
           <Text style={styles.listTitle}>{task.title}</Text>
           {task.note ? <Text style={styles.listBody}>{task.note}</Text> : null}
         </GlassCard>

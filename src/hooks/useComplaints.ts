@@ -27,10 +27,11 @@ export function useComplaints() {
     await submitComplaint(title, body, attachment);
   };
 
-  const resolveComplaint = async (id: string, nextStatus: string) => {
-    await updateComplaintStatus(id, nextStatus);
+  
+  const resolveComplaint = async (id: string | number, nextStatus: string) => {
+    await updateComplaintStatus(String(id), nextStatus);
     setComplaints((current) =>
-      current.map((c) => (c.id === id ? { ...c, status: nextStatus } : c))
+      current.map((c) => (String(c.id) === String(id) ? { ...c, status: nextStatus } : c))
     );
   };
 

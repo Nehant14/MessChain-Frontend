@@ -1,14 +1,15 @@
 import React, { useState, useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { GlassCard, Pill, PrimaryButton, SectionTitle, TextField, ToggleRow } from '../../components';
-import { staffDrafts } from '../../data';
 import { NetworkContext } from '../../context/NetworkContext';
 import { createStaffMember } from '../../api/staff';
 
 export default function CreateStaffScreen() {
+  // CHANGED: Aligned component state keys to match active backend controller properties
   const [staffName, setStaffName] = useState('');
-  const [staffWallet, setStaffWallet] = useState('');
-  const [staffRole, setStaffRole] = useState('Kitchen Lead');
+  const [staffEmail, setStaffEmail] = useState('');
+  const [staffPassword, setStaffPassword] = useState('');
+  const [messId, setMessId] = useState('');
   const [limitedAccess, setLimitedAccess] = useState(true);
 
   const networkContext = useContext(NetworkContext);
@@ -21,12 +22,14 @@ export default function CreateStaffScreen() {
     launchProcessing('create-staff', async () => {
       await createStaffMember({
         name: staffName,
-        wallet: staffWallet,
-        role: staffRole,
-        limitedAccess,
+        email: staffEmail,
+        password: staffPassword,
+        messId: messId,
       });
       setStaffName('');
-      setStaffWallet('');
+      setStaffEmail('');
+      setStaffPassword('');
+      setMessId('');
     });
   };
 
@@ -34,25 +37,32 @@ export default function CreateStaffScreen() {
     <View>
       <SectionTitle eyebrow="" title="Create staff member" />
       <GlassCard>
-        {staffDrafts.map((field) => (
-          <TextField
-            key={field.label}
-            label={field.label}
-            placeholder={field.placeholder}
-            value={
-              field.label === 'Employee name'
-                ? staffName
-                : field.label === 'Wallet address'
-                ? staffWallet
-                : staffRole
-            }
-            onChangeText={(text) => {
-              if (field.label === 'Employee name') setStaffName(text);
-              if (field.label === 'Wallet address') setStaffWallet(text);
-              if (field.label === 'Role assignment') setStaffRole(text);
-            }}
-          />
-        ))}
+        <TextField
+          label="Employee Name"
+          placeholder="John Doe"
+          value={staffName}
+          onChangeText={setStaffName}
+        />
+        <TextField
+          label="Email Address"
+          placeholder="staff@mess.edu"
+          value={staffEmail}
+          onChangeText={setStaffEmail}
+        />
+        <TextField
+          label="Password"
+          placeholder="••••••••"
+          value={staffPassword}
+          onChangeText={setStaffPassword}
+          secureTextEntry
+        />
+        <TextField
+          label="Mess ID Allocation"
+          placeholder="Enter Mess Identifier string"
+          value={messId}
+          onChangeText={setMessId}
+        />
+        
         <ToggleRow
           label="Limited Access"
           description="Restrict payroll, dispute resolution, and rebate approvals until a supervisor expands privileges."
